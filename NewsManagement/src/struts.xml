@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1.7//EN"
+    "http://struts.apache.org/dtds/struts-2.1.7.dtd">
+	<struts>
+	<!-- 设计开发者模式 -->
+		<constant name="struts.devMode" value="true"></constant>
+		<package name="default" namespace="/" extends="struts-default">
+	</package>
+	<!-- 引入外部文件 -->
+		<include file="NewsDetail.xml"></include>
+	
+	</struts>

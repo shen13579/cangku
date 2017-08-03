@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:p="http://www.springframework.org/schema/p"  
+xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+     <!-- 加载数据库需要的四要素  -->
+     <context:property-placeholder location="classpath:jdbc.properties"/>
+     <!-- 配置数据源 dbcp-->
+     <bean name="shiwu" class="org.apache.commons.dbcp.BasicDataSource">
+     	<property name="driverClassName" value="${jdbc.driver}"/>
+     	<property name="url" value="${jdbc.url}"/>
+     	<property name="username" value="${user}"/>
+     	<property name="password" value="${password}"/>
+     
+     </bean>
+     	
+     <!-- 整合hibernate配置sessionfactory-->
+     <bean name="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+     	<property name="dataSource" ref="shiwu"/>
+     	<!-- 加载所有的 hbm.xml -->
+     	<property name="mappingDirectoryLocations" value="classpath:cn/bdqn/bean"></property>
+     	<!-- 加载hibernate其他的property元素 -->
+     	<property name="hibernateProperties">
+     		<props>
+	     		<prop key="hibernate.hbm2ddl.auto">update</prop>
+	     		<prop key="hibernate.show_sql">true</prop>
+	     		<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+     		<!-- 配置当前事物线程内使用session -->
+     		<prop key="hibernate.current_session_context_class">
+     			org.springframework.orm.hibernate3.SpringSessionContext
+     		</prop>
+     		</props>   	
+     	</property>
+
+     </bean>
+     
+     <!-- 配置dao层 -->
+     <bean name="baseDao" class="cn.bdqn.dao.impl.BaseDaoImpl" p:sessionFactory-ref="sessionFactory"/>
+     <!-- 配置service层 -->
+     <bean name="detailservice" class="cn.bdqn.service.impl.DetailServiceImpl" p:dao-ref="baseDao"/>
+    <!-- 配置action -->
+    	<bean name="NewsDetailAction" class="cn.bdqn.action.NewsDetailAction" p:service-ref="detailservice" scope="prototype"/>
+     <!--========================= 配置事物============================ -->
+    	<!--01配置事物管理器 -->
+     <bean name="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+     	<property name="dataSource" ref="shiwu"></property>
+     </bean>
+     <!-- 02设置事物通知 -->
+     <tx:advice id="txAdvice" transaction-manager="transactionManager">
+     <!-- 获取经过事务的方法 isolation="DEFAULT"设置事物的隔离级别 propagation="REQUIRED"事物的传播机制-->
+     <tx:attributes>
+     	<tx:method name="add*" isolation="DEFAULT" propagation="REQUIRED"/>
+     	<tx:method name="del*" isolation="DEFAULT" propagation="REQUIRED"/>
+     	<tx:method name="update*" isolation="DEFAULT" propagation="REQUIRED"/>
+     	<tx:method name="find*" isolation="DEFAULT" propagation="REQUIRED" read-only="true"/>   	
+     </tx:attributes>    
+     </tx:advice>
+     <!-- 03.指定切入点 -->
+     <aop:config>
+     	<aop:pointcut expression="execution(* *..service.*.*(..))" id="myPoint"/>
+     	<aop:advisor advice-ref="txAdvice" pointcut-ref="myPoint"/>
+     
+     </aop:config>
+     
+</beans>

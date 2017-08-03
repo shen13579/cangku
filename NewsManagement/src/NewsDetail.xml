@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1.7//EN"
+    "http://struts.apache.org/dtds/struts-2.1.7.dtd">
+	<struts>
+	
+		<package name="detail" namespace="/newsDetail" extends="default">
+		<!-- 查询所有 -->
+		<action name="newsList" class="NewsDetailAction" method="newsList">
+			<result>/newsDetail.jsp</result></action>
+		
+		<!-- 查询指定的所有评论 -->
+		<action name="findComments" class="NewsDetailAction" method="findComments">
+			<result>/newsComment.jsp</result></action>
+		
+		
+		
+		</package>
+	
+	
+	
+	</struts>

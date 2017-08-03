@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+      "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="cn.bdqn.bean">
+   <class name="News_detail">
+   	<id name="id">
+   		<generator class="increment"></generator>
+   	</id>
+   	<property name="title"></property>
+   	<property name="summary"></property>
+   	<property name="author"></property>
+   	<property name="createdate"></property>
+   	<!-- cascade="all"级联新增  inverse="true"控制反转 不维护让conmment维护-->
+   	<set name="comments" cascade="all" inverse="true" lazy="false">
+   		<key column="newsid"></key>
+   		<one-to-many class="News_comment"/>
+   	</set>
+   </class>
+</hibernate-mapping>
